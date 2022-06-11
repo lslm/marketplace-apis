@@ -1,7 +1,9 @@
 CREATE TABLE customers (
     id UUID PRIMARY KEY,
     name VARCHAR NOT NULL,
-    email VARCHAR NOT NULL
+    email VARCHAR NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE addresses (
@@ -11,5 +13,7 @@ CREATE TABLE addresses (
     line_two VARCHAR,
     city VARCHAR,
     state VARCHAR,
-    zip_code VARCHAR
+    zip_code VARCHAR,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );

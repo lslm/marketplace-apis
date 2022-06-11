@@ -1,10 +1,16 @@
 package com.lslm.customersapi.entities;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "addresses")
+@EntityListeners(AuditingEntityListener.class)
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +33,14 @@ public class Address {
 
     @Column(name = "zip_code",nullable = false)
     private String zipCode;
+
+    @CreatedDate
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
     public UUID getId() {
         return id;
@@ -82,5 +96,21 @@ public class Address {
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
