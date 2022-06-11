@@ -5,6 +5,9 @@ import com.lslm.customersapi.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class CustomerService {
 
@@ -13,5 +16,13 @@ public class CustomerService {
 
     public Customer create(Customer customer) {
         return customerRepository.save(customer);
+    }
+
+    public Customer find(UUID id) {
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
     }
 }

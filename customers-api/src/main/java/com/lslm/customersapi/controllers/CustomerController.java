@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +27,22 @@ public class CustomerController {
     public ResponseEntity<Customer> create(@RequestBody Customer newCustomer) {
         Customer customer = customerService.create(newCustomer);
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{customerId}")
+    public ResponseEntity<Customer> find(@PathVariable UUID customerId) {
+        Customer customer = customerService.find(customerId);
+
+        if (customer != null)
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Customer>> findAll() {
+        List<Customer> customers = customerService.findAll();
+        return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
     @PostMapping("/{customerId}/address")
