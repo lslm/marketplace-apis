@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
+@Table(name = "addresses")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,10 +13,10 @@ public class Address {
     @Column(nullable = false)
     private UUID customerId;
 
-    @Column(nullable = false)
+    @Column(name = "line_one", nullable = false)
     private String lineOne;
 
-    @Column(nullable = false)
+    @Column(name = "line_two", nullable = false)
     private String lineTwo;
 
     @Column(nullable = false)
@@ -24,7 +25,7 @@ public class Address {
     @Column(nullable = false)
     private String state;
 
-    @Column(nullable = false)
+    @Column(name = "zip_code",nullable = false)
     private String zipCode;
 
     public UUID getId() {
