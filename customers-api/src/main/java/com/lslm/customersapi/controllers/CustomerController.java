@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,6 +37,12 @@ public class CustomerController {
             return new ResponseEntity<>(customer, HttpStatus.OK);
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Customer>> findAll() {
+        List<Customer> customers = customerService.findAll();
+        return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
     @PostMapping("/{customerId}/address")
