@@ -1,5 +1,8 @@
 package com.lslm.accountsapi.services;
 
+import com.lslm.accountsapi.adapters.AccountRegistrationAdapter;
+import com.lslm.accountsapi.adapters.requests.AccountRegistrationRequest;
+import com.lslm.accountsapi.adapters.responses.AccountRegistrationResponse;
 import com.lslm.accountsapi.models.Account;
 import com.lslm.accountsapi.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,12 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account create(Account account) {
-        return accountRepository.save(account);
+    @Autowired
+    private AccountRegistrationAdapter accountRegistrationAdapter;
+
+    public AccountRegistrationResponse create(AccountRegistrationRequest accountRegistrationRequest) {
+        Account account = accountRegistrationAdapter.toAccount(accountRegistrationRequest);
+        Account persistedAccount = accountRepository.save(account);
+        return accountRegistrationAdapter.toResponse(persistedAccount);
     }
 }

@@ -1,6 +1,7 @@
 package com.lslm.accountsapi.controllers;
 
-import com.lslm.accountsapi.models.Account;
+import com.lslm.accountsapi.adapters.requests.AccountRegistrationRequest;
+import com.lslm.accountsapi.adapters.responses.AccountRegistrationResponse;
 import com.lslm.accountsapi.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<Account> create(@RequestBody Account newAccount) {
-        Account account = accountService.create(newAccount);
-        return new ResponseEntity<>(account, HttpStatus.CREATED);
+    public ResponseEntity<AccountRegistrationResponse> create(@RequestBody AccountRegistrationRequest accountRegistrationRequest) {
+        AccountRegistrationResponse response = accountService.create(accountRegistrationRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
