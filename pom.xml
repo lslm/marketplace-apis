@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.lslm</groupId>
+	<artifactId>marketplace</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Marketplace</name>
+	<packaging>pom</packaging>
+
+    <modules>
+        <module>accounts-api</module>
+        <module>customers-api</module>
+        <module>stock-api</module>
+        <module>orders-api</module>
+        <module>products-api</module>
+    </modules>
+
+	<description>Marketplace Microservices</description>
+	<properties>
+		<java.version>18</java.version>
+		<spring.boot.maven.plugin.version>2.7.0</spring.boot.maven.plugin.version>
+		<spring.boot.dependecies.version>2.7.0</spring.boot.dependecies.version>
+		<maven.compiler.source>18</maven.compiler.source>
+		<maven.compiler.target>18</maven.compiler.target>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.dependecies.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
