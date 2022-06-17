@@ -1,16 +1,17 @@
 package com.lslm.stockapi.services;
 
 import com.lslm.stockapi.clients.ProductClient;
+import com.lslm.stockapi.entities.Product;
 import com.lslm.stockapi.entities.ProductStock;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.repositories.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class StockService {
@@ -20,8 +21,17 @@ public class StockService {
     @Autowired
     private ProductClient productClient;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     private boolean doesProductExist(Stock stock) throws IOException {
-        return productClient.getById(stock.getProductId()) != null;
+        Product product = restTemplate.getForObject(
+                "http://PRODUCTS-API/api/products/{productId}",
+                Product.class,
+                stock.getProductId()
+        );
+
+        return product != null;
     }
 
     public Stock create(Stock stock) throws IOException {
