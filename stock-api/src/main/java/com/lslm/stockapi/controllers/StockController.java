@@ -2,6 +2,7 @@ package com.lslm.stockapi.controllers;
 
 import com.lslm.stockapi.adapters.StockAdapter;
 import com.lslm.stockapi.adapters.requests.CreateStockRequest;
+import com.lslm.stockapi.adapters.responses.AvailableStockResponse;
 import com.lslm.stockapi.adapters.responses.StockResponse;
 import com.lslm.stockapi.entities.AvailableStock;
 import com.lslm.stockapi.entities.Stock;
@@ -52,8 +53,12 @@ public class StockController {
     }
 
     @GetMapping("/products/{productId}/available")
-    public ResponseEntity<AvailableStock> getByProduct(@PathVariable UUID productId) {
-        AvailableStock productStock = stockService.availableStock(productId);
-        return new ResponseEntity<>(productStock, HttpStatus.OK);
+    public ResponseEntity<AvailableStockResponse> getByProduct(@PathVariable UUID productId) {
+        AvailableStock availableStock = stockService.availableStock(productId);
+
+        return new ResponseEntity<>(
+                stockAdapter.toAvailableStockResponse(availableStock),
+                HttpStatus.OK
+        );
     }
 }

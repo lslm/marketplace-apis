@@ -1,7 +1,9 @@
 package com.lslm.stockapi.adapters;
 
 import com.lslm.stockapi.adapters.requests.CreateStockRequest;
+import com.lslm.stockapi.adapters.responses.AvailableStockResponse;
 import com.lslm.stockapi.adapters.responses.StockResponse;
+import com.lslm.stockapi.entities.AvailableStock;
 import com.lslm.stockapi.entities.Stock;
 import org.springframework.stereotype.Component;
 
@@ -33,5 +35,13 @@ public class StockAdapter {
                         .quantity(stock.getQuantity())
                         .build())
                 .toList();
+    }
+
+    public AvailableStockResponse toAvailableStockResponse(AvailableStock availableStock) {
+        return AvailableStockResponse
+                .builder()
+                .productId(availableStock.productId())
+                .availableQuantity(availableStock.availableQuantity())
+                .build();
     }
 }
