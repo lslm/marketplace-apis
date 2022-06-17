@@ -1,9 +1,16 @@
 package com.lslm.stockapi.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.UUID;
 
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
