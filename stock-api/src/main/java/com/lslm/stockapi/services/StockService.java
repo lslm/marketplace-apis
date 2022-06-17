@@ -19,15 +19,8 @@ public class StockService {
     @Autowired
     private ProductClient productClient;
 
-    private boolean doesProductExist(Stock stock) throws IOException {
-        return productClient.getById(stock.getProductId()) != null;
-    }
-
     public Stock create(Stock stock) throws IOException {
-        if (doesProductExist(stock))
-            return stockRepository.save(stock);
-
-        return null;
+        return stockRepository.save(stock);
     }
 
     public Stock find(UUID id) {

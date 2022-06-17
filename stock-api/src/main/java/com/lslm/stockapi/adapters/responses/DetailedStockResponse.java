@@ -2,13 +2,12 @@ package com.lslm.stockapi.adapters.responses;
 
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Builder
-public record ProductResponse(
+public record DetailedStockResponse(
         UUID id,
-        String description,
-        BigDecimal price
+        ProductResponse product,
+        Integer quantity
 ) {
 }

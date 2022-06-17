@@ -3,8 +3,11 @@ package com.lslm.stockapi.controllers;
 import com.lslm.stockapi.adapters.StockAdapter;
 import com.lslm.stockapi.adapters.requests.CreateStockRequest;
 import com.lslm.stockapi.adapters.responses.AvailableStockResponse;
+import com.lslm.stockapi.adapters.responses.DetailedStockResponse;
 import com.lslm.stockapi.adapters.responses.StockResponse;
+import com.lslm.stockapi.clients.ProductClient;
 import com.lslm.stockapi.entities.AvailableStock;
+import com.lslm.stockapi.entities.Product;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,24 +29,33 @@ public class StockController {
     @Autowired
     private StockAdapter stockAdapter;
 
+    @Autowired
+    private ProductClient productClient;
+
     @PostMapping()
-    public ResponseEntity<StockResponse> create(@RequestBody CreateStockRequest createStockRequest) throws IOException {
+    public ResponseEntity<DetailedStockResponse> create(@RequestBody CreateStockRequest createStockRequest) throws IOException {
+        Product product = productClient.getById(createStockRequest.productId());
+
+        if (product == null)
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Product does not exists");
+
         Stock stock = stockService.create(stockAdapter.toStock(createStockRequest));
 
         if (stock != null)
-            return new ResponseEntity<>(stockAdapter.toResponse(stock), HttpStatus.CREATED);
+            return new ResponseEntity<>(stockAdapter.toDetailedResponse(stock, product), HttpStatus.CREATED);
 
         throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Stock could not be created");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StockResponse> find(@PathVariable UUID id) {
+    public ResponseEntity<DetailedStockResponse> find(@PathVariable UUID id) {
         Stock stock = stockService.find(id);
 
-        if (stock != null)
-            return new ResponseEntity<>(stockAdapter.toResponse(stock), HttpStatus.OK);
+        if (stock == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock not found");
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock not found");
+        Product product = productClient.getById(stock.getProductId());
+        return new ResponseEntity<>(stockAdapter.toDetailedResponse(stock, product), HttpStatus.OK);
     }
 
     @GetMapping()

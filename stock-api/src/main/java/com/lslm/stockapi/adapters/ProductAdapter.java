@@ -13,4 +13,13 @@ public class ProductAdapter {
                 .price(productResponse.price())
                 .build();
     }
+
+    public ProductResponse toProductResponse(Product product) {
+        return ProductResponse
+                .builder()
+                .id(product.getId())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .build();
+    }
 }
