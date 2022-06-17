@@ -46,9 +46,9 @@ public class StockController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Stock>> findAll() {
+    public ResponseEntity<List<StockResponse>> findAll() {
         List<Stock> stocks = stockService.findAll();
-        return new ResponseEntity<>(stocks, HttpStatus.OK);
+        return new ResponseEntity<>(stockAdapter.toListResponse(stocks), HttpStatus.OK);
     }
 
     @GetMapping("/products/{productId}/available")
