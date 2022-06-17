@@ -1,5 +1,6 @@
 package com.lslm.stockapi.services;
 
+import com.lslm.stockapi.adapters.responses.ProductResponse;
 import com.lslm.stockapi.clients.ProductClient;
 import com.lslm.stockapi.entities.Product;
 import com.lslm.stockapi.entities.ProductStock;
@@ -21,17 +22,8 @@ public class StockService {
     @Autowired
     private ProductClient productClient;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
     private boolean doesProductExist(Stock stock) throws IOException {
-        Product product = restTemplate.getForObject(
-                "http://PRODUCTS-API/api/products/{productId}",
-                Product.class,
-                stock.getProductId()
-        );
-
-        return product != null;
+        return productClient.getById(stock.getProductId()) != null;
     }
 
     public Stock create(Stock stock) throws IOException {
