@@ -29,6 +29,7 @@ public class StockAdapter {
                 .id(stock.getId())
                 .productId(stock.getProductId())
                 .quantity(stock.getQuantity())
+                .createdAt(stock.getCreatedAt())
                 .build();
     }
 
@@ -38,6 +39,7 @@ public class StockAdapter {
                 .id(stock.getId())
                 .product(productAdapter.toProductResponse(product))
                 .quantity(stock.getQuantity())
+                .createdAt(stock.getCreatedAt())
                 .build();
     }
 
