@@ -3,7 +3,7 @@ package com.lslm.stockapi.controllers;
 import com.lslm.stockapi.adapters.StockAdapter;
 import com.lslm.stockapi.adapters.requests.CreateStockRequest;
 import com.lslm.stockapi.adapters.responses.StockResponse;
-import com.lslm.stockapi.entities.ProductStock;
+import com.lslm.stockapi.entities.AvailableStock;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,8 @@ public class StockController {
     }
 
     @GetMapping("/products/{productId}/available")
-    public ResponseEntity<ProductStock> getByProduct(@PathVariable UUID productId) {
-        ProductStock productStock = stockService.byProduct(productId);
+    public ResponseEntity<AvailableStock> getByProduct(@PathVariable UUID productId) {
+        AvailableStock productStock = stockService.availableStock(productId);
         return new ResponseEntity<>(productStock, HttpStatus.OK);
     }
 }

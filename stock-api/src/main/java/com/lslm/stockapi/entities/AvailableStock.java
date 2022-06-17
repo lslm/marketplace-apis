@@ -2,11 +2,11 @@ package com.lslm.stockapi.entities;
 
 import java.util.UUID;
 
-public class ProductStock {
+public class AvailableStock {
     private UUID productId;
     private int availableQuantity;
 
-    public ProductStock(UUID productId, int availableQuantity) {
+    public AvailableStock(UUID productId, int availableQuantity) {
         this.productId = productId;
         this.availableQuantity = availableQuantity;
     }
