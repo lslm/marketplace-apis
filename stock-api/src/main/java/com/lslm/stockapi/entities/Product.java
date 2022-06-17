@@ -1,8 +1,11 @@
 package com.lslm.stockapi.entities;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Builder
 public class Product {
     private UUID id;
     private String description;

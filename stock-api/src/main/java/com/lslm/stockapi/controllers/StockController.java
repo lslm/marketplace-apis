@@ -1,6 +1,10 @@
 package com.lslm.stockapi.controllers;
 
-import com.lslm.stockapi.entities.ProductStock;
+import com.lslm.stockapi.adapters.StockAdapter;
+import com.lslm.stockapi.adapters.requests.CreateStockRequest;
+import com.lslm.stockapi.adapters.responses.AvailableStockResponse;
+import com.lslm.stockapi.adapters.responses.StockResponse;
+import com.lslm.stockapi.entities.AvailableStock;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,31 +23,42 @@ public class StockController {
     @Autowired
     private StockService stockService;
 
+    @Autowired
+    private StockAdapter stockAdapter;
+
     @PostMapping()
-    public ResponseEntity<Stock> create(@RequestBody Stock newStock) throws IOException {
-        Stock stock = stockService.create(newStock);
+    public ResponseEntity<StockResponse> create(@RequestBody CreateStockRequest createStockRequest) throws IOException {
+        Stock stock = stockService.create(stockAdapter.toStock(createStockRequest));
 
         if (stock != null)
-            return new ResponseEntity<>(stock, HttpStatus.CREATED);
+            return new ResponseEntity<>(stockAdapter.toResponse(stock), HttpStatus.CREATED);
 
         throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Stock could not be created");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Stock> find(@PathVariable UUID id) {
+    public ResponseEntity<StockResponse> find(@PathVariable UUID id) {
         Stock stock = stockService.find(id);
-        return new ResponseEntity<>(stock, HttpStatus.OK);
+
+        if (stock != null)
+            return new ResponseEntity<>(stockAdapter.toResponse(stock), HttpStatus.OK);
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock not found");
     }
 
     @GetMapping()
-    public ResponseEntity<List<Stock>> findAll() {
+    public ResponseEntity<List<StockResponse>> findAll() {
         List<Stock> stocks = stockService.findAll();
-        return new ResponseEntity<>(stocks, HttpStatus.OK);
+        return new ResponseEntity<>(stockAdapter.toListResponse(stocks), HttpStatus.OK);
     }
 
     @GetMapping("/products/{productId}/available")
-    public ResponseEntity<ProductStock> getByProduct(@PathVariable UUID productId) {
-        ProductStock productStock = stockService.byProduct(productId);
-        return new ResponseEntity<>(productStock, HttpStatus.OK);
+    public ResponseEntity<AvailableStockResponse> getByProduct(@PathVariable UUID productId) {
+        AvailableStock availableStock = stockService.availableStock(productId);
+
+        return new ResponseEntity<>(
+                stockAdapter.toAvailableStockResponse(availableStock),
+                HttpStatus.OK
+        );
     }
 }

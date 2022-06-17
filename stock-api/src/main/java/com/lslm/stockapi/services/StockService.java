@@ -1,7 +1,7 @@
 package com.lslm.stockapi.services;
 
 import com.lslm.stockapi.clients.ProductClient;
-import com.lslm.stockapi.entities.ProductStock;
+import com.lslm.stockapi.entities.AvailableStock;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.repositories.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class StockService {
@@ -32,21 +31,16 @@ public class StockService {
     }
 
     public Stock find(UUID id) {
-        return stockRepository.findById(id).orElseThrow();
+        return stockRepository.findById(id).orElse(null);
     }
 
     public List<Stock> findAll() {
         return stockRepository.findAll();
     }
 
-    public ProductStock byProduct(UUID productId) {
-        List<Stock> stocks = stockRepository.findAll();
-
-        List<Stock> productStock = stocks.stream().filter(stock -> stock.getProductId().equals(productId)).toList();
-        List<Integer> quantities = productStock.stream().map(Stock::getQuantity).toList();
-
-        int availableQuantity = quantities.stream().reduce(0, Integer::sum);
-
-        return new ProductStock(productId, availableQuantity);
+    public AvailableStock availableStock(UUID productId) {
+        List<Stock> stocks = stockRepository.findByProductId(productId);
+        int availableQuantity = stocks.stream().mapToInt(Stock::getQuantity).sum();
+        return new AvailableStock(productId, availableQuantity);
     }
 }
