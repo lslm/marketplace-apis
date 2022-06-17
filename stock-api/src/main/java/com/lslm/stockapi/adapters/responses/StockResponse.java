@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder
-public record CreateStockResponse(
+public record StockResponse(
         UUID id,
         UUID productId,
         Integer quantity

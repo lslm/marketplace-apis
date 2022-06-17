@@ -34,7 +34,7 @@ public class StockService {
     }
 
     public Stock find(UUID id) {
-        return stockRepository.findById(id).orElseThrow();
+        return stockRepository.findById(id).orElse(null);
     }
 
     public List<Stock> findAll() {

@@ -2,7 +2,7 @@ package com.lslm.stockapi.controllers;
 
 import com.lslm.stockapi.adapters.StockAdapter;
 import com.lslm.stockapi.adapters.requests.CreateStockRequest;
-import com.lslm.stockapi.adapters.responses.CreateStockResponse;
+import com.lslm.stockapi.adapters.responses.StockResponse;
 import com.lslm.stockapi.entities.ProductStock;
 import com.lslm.stockapi.entities.Stock;
 import com.lslm.stockapi.services.StockService;
@@ -26,7 +26,7 @@ public class StockController {
     private StockAdapter stockAdapter;
 
     @PostMapping()
-    public ResponseEntity<CreateStockResponse> create(@RequestBody CreateStockRequest createStockRequest) throws IOException {
+    public ResponseEntity<StockResponse> create(@RequestBody CreateStockRequest createStockRequest) throws IOException {
         Stock stock = stockService.create(stockAdapter.toStock(createStockRequest));
 
         if (stock != null)
@@ -36,9 +36,13 @@ public class StockController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Stock> find(@PathVariable UUID id) {
+    public ResponseEntity<StockResponse> find(@PathVariable UUID id) {
         Stock stock = stockService.find(id);
-        return new ResponseEntity<>(stock, HttpStatus.OK);
+
+        if (stock != null)
+            return new ResponseEntity<>(stockAdapter.toResponse(stock), HttpStatus.OK);
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stock not found");
     }
 
     @GetMapping()
