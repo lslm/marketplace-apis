@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Component
 public class ProductClient {
-    final String BASE_URL = "http://localhost:8081/api/products";
+    final String BASE_URL = "http://PRODUCTS-API/api/products/";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -21,7 +21,7 @@ public class ProductClient {
 
     public Product getById(UUID productId) {
         ProductResponse productResponse = restTemplate.getForObject(
-                "http://PRODUCTS-API/api/products/{productId}",
+                BASE_URL + "{productId}",
                 ProductResponse.class,
                 productId
         );
