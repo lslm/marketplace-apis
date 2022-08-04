@@ -1,40 +1,28 @@
 package com.lslm.ordersapi.clients;
 
-import com.google.gson.Gson;
 import com.lslm.ordersapi.entities.ProductStock;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @Component
 public class StockClient {
-    final String BASE_URL = "http://localhost:8080/api/stocks";
+    final String BASE_URL = "http://STOCK-API/api/stocks";
 
-    private final Gson gson;
-    private final OkHttpClient client;
-
-    public StockClient() {
-        gson = new Gson();
-        client = new OkHttpClient();
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     public ProductStock getProductStock(UUID productId) throws IOException {
-        Request request = new Request.Builder()
-                .url(BASE_URL + "/products/" + productId.toString() + "/available")
-                .build();
+        ProductStock productStock = restTemplate.getForObject(
+                BASE_URL + "/products/" + productId.toString() + "/available",
+                ProductStock.class,
+                productId
+        );
 
-        Response response = client.newCall(request).execute();
-
-        if (response.isSuccessful()) {
-            return gson.fromJson(response.body().string(), ProductStock.class);
-        }
-
-        return null;
+        assert productStock != null;
+        return productStock;
     }
-
-
 }
