@@ -8,13 +8,11 @@ import com.lslm.ordersapi.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -40,7 +38,12 @@ public class OrderController {
         if (order == null)
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Stock not available");
 
-        orderProducer.produceOrderCreated(order);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Order>> findAll() {
+        List<Order> orders = orderService.findAll();
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 }
