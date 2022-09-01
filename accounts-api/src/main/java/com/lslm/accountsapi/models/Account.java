@@ -30,6 +30,9 @@ public class Account {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(nullable = false)
+    private String passwordDigest;
+
     public UUID getId() {
         return id;
     }
@@ -64,6 +67,14 @@ public class Account {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public String getPasswordDigest() {
+        return passwordDigest;
+    }
+
+    public void setPasswordDigest(String passwordDigest) {
+        this.passwordDigest = passwordDigest;
     }
 
     public void setCreatedAt(Instant createdAt) {
