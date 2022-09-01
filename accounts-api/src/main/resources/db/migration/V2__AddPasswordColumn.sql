@@ -1,0 +1,1 @@
+ALTER TABLE accounts ADD COLUMN password_digest VARCHAR UNIQUE NOT NULL
