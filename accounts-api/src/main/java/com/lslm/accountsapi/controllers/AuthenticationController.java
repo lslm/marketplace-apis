@@ -1,6 +1,8 @@
 package com.lslm.accountsapi.controllers;
 
+import com.lslm.accountsapi.adapters.AuthenticationAdapter;
 import com.lslm.accountsapi.adapters.requests.AuthenticationRequest;
+import com.lslm.accountsapi.adapters.responses.AuthenticationResponse;
 import com.lslm.accountsapi.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,16 +24,20 @@ public class AuthenticationController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private AuthenticationAdapter authenticationAdapter;
+
     @PostMapping
-    public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.email(),
-                        authenticationRequest.password()
-                );
+                        authenticationRequest.password());
 
-        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        Authentication authentication = authenticationManager
+                .authenticate(usernamePasswordAuthenticationToken);
         String token = tokenService.generateToken(authentication);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+
+        return new ResponseEntity<>(authenticationAdapter.toAuthenticationResponse(token), HttpStatus.ACCEPTED);
     }
 }
