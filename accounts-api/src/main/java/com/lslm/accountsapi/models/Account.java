@@ -1,18 +1,28 @@
 package com.lslm.accountsapi.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 @Entity
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "accounts")
-public class Account {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -33,51 +43,38 @@ public class Account {
     @Column(nullable = false)
     private String passwordDigest;
 
-    public UUID getId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getPasswordDigest() {
+    @Override
+    public String getPassword() {
         return passwordDigest;
     }
 
-    public void setPasswordDigest(String passwordDigest) {
-        this.passwordDigest = passwordDigest;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
