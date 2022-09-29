@@ -5,6 +5,8 @@ import com.lslm.accountsapi.adapters.responses.AccountRegistrationResponse;
 import com.lslm.accountsapi.models.Account;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AccountRegistrationAdapter {
     public Account toAccount(AccountRegistrationRequest accountRegistrationRequest) {
@@ -23,5 +25,9 @@ public class AccountRegistrationAdapter {
                 .email(account.getEmail())
                 .createdAt(account.getCreatedAt())
                 .build();
+    }
+
+    public List<AccountRegistrationResponse> toListResponse(List<Account> accounts) {
+        return accounts.stream().map(this::toResponse).toList();
     }
 }
