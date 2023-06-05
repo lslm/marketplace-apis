@@ -30,9 +30,6 @@ public class OrderController {
     public ResponseEntity<Order> create(@RequestBody Order newOrder) throws IOException {
         ProductStock productStock = stockClient.getProductStock(newOrder.getProductId());
 
-        if (productStock == null)
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Product stock not found");
-
         Order order = orderService.create(newOrder, productStock);
 
         if (order == null)

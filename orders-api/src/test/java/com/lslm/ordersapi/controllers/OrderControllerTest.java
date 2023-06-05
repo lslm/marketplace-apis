@@ -1,109 +1,119 @@
 package com.lslm.ordersapi.controllers;
 
-import com.lslm.ordersapi.clients.StockClient;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.google.gson.Gson;
+import com.lslm.ordersapi.entities.Order;
 import com.lslm.ordersapi.entities.ProductStock;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.UUID;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
 public class OrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    StockClient stockClient;
+    private static final WireMockServer wireMockServer = new WireMockServer(options().port(8081));
+
+    @BeforeAll
+    static void beforeAll() {
+        wireMockServer.start();
+    }
+
+    @BeforeEach
+    void setUp() {
+        wireMockServer.resetAll();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        wireMockServer.stop();
+    }
+
+    @Test
+    public void shouldNotCreateOrderWhenProductStockDoesNotExist() throws Exception {
+        String productId = "53132797-9371-4c18-b90a-ee1b35863ef5";
+
+        wireMockServer.stubFor(
+                WireMock.get(urlPathEqualTo("/api/stocks/products/" + productId + "/available"))
+                        .willReturn(aResponse()
+                                .withStatus(404)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody("{}")));
+
+        String requestBody = """
+        {
+           "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
+           "quantitiy": 10
+        }        
+        """;
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/orders")
+                .content(requestBody)
+                .contentType("application/json")).andExpect(status().isNotFound())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals("", responseBody);
+    }
 
     @Test
     public void shouldCreateOrderWhenQuantityIsAvailable() throws Exception {
+        String productId = "53132797-9371-4c18-b90a-ee1b35863ef5";
+
         ProductStock productStock = new ProductStock();
-        productStock.setProductId(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"));
-        productStock.setAvailableQuantity(20);
-
-        when(stockClient.getProductStock(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"))).thenReturn(productStock);
-
-        String requestBody = """
-            {
-                "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
-                "quantity": 12
-            }
-        """;
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/orders")
-                .content(requestBody)
-                .contentType("application/json")).andExpect(status().isCreated());
-    }
-
-    @Test
-    public void shouldCreateOrderWhenTheAvailableQuantityIsTheSame() throws Exception {
-        ProductStock productStock = new ProductStock();
-        productStock.setProductId(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"));
+        productStock.setProductId(UUID.fromString(productId));
         productStock.setAvailableQuantity(10);
+        Gson gson = new Gson();
 
-        when(stockClient.getProductStock(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"))).thenReturn(productStock);
-
-        String requestBody = """
-            {
-                "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
-                "quantity": 10
-            }
-        """;
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/orders")
-                .content(requestBody)
-                .contentType("application/json")).andExpect(status().isCreated());
-    }
-
-    @Test
-    public void shouldNotCreateOrderDueToUnavailableQuantity() throws Exception {
-        ProductStock productStock = new ProductStock();
-        productStock.setProductId(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"));
-        productStock.setAvailableQuantity(5);
-
-        when(stockClient.getProductStock(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"))).thenReturn(productStock);
+        wireMockServer.stubFor(
+                WireMock.get(urlPathEqualTo("/api/stocks/products/" + productId + "/available"))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody(gson.toJson(productStock))));
 
         String requestBody = """
-            {
-                "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
-                "quantity": 10
-            }
+        {
+           "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
+           "quantitiy": 5
+        }        
         """;
 
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/orders")
-                .content(requestBody)
-                .contentType("application/json")).andExpect(status().isUnprocessableEntity());
-    }
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/orders")
+                        .content(requestBody)
+                        .contentType("application/json")).andExpect(status().isCreated())
+                .andReturn();
 
-    @Test
-    public void shouldNotCreateOrderDueToUnavailableProduct() throws Exception {
-        when(stockClient.getProductStock(UUID.fromString("53132797-9371-4c18-b90a-ee1b35863ef5"))).thenReturn(null);
+        String responseBody = result.getResponse().getContentAsString();
 
-        String requestBody = """
-            {
-                "productId": "53132797-9371-4c18-b90a-ee1b35863ef5",
-                "quantity": 10
-            }
-        """;
+        Order responseOrder = gson.fromJson(responseBody, Order.class);
 
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/orders")
-                .content(requestBody)
-                .contentType("application/json")).andExpect(status().isUnprocessableEntity());
+        Order expectedOrder = new Order();
+        expectedOrder.setQuantity(5);
+        expectedOrder.setProductId(UUID.fromString(productId));
+
+        assertEquals(expectedOrder.getQuantity(), responseOrder.getQuantity());
+        assertEquals(expectedOrder.getProductId(), responseOrder.getProductId());
     }
 }
